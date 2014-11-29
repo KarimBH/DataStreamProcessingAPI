@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans 
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://camel.apache.org/schema/spring
+        http://camel.apache.org/schema/spring/camel-spring.xsd
+         http://www.springframework.org/schema/data/jpa
+         http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+   <!--   
+    <bean id="route" class="org.apache.camel.example.spring.MyRouteBuilder"/> -->
+ 
+ 
+    
+  <camelContext id="MySpringCamelContext" xmlns="http://camel.apache.org/schema/spring"
+      autoStartup="false">
+  </camelContext>
+      
+     
+   
+  <!-- ###################### -->   
+ 
+    <bean id="activemq"
+class="org.apache.activemq.camel.component.ActiveMQComponent">
+<property name="transacted" value="true"/>
+<property name="transactionManager" ref="txManager"/>
+</bean>
+
+    <bean id="txManager"
+class="org.springframework.transaction.jta.JtaTransactionManager">
+<property name="transactionManager" ref="atomikosTransactionManager"/>
+<property name="userTransaction" ref="atomikosUserTransaction"/>
+</bean>
+
+ <bean id="jmsXaConnectionFactory"
+class="org.apache.activemq.ActiveMQXAConnectionFactory">
+<property name="brokerURL" value="tcp://localhost:61616"/>
+</bean>  
+
+      <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close">
+        <property name="forceShutdown" value="false" />
+    </bean>
+ 
+    <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.J2eeUserTransaction">
+        <property name="transactionTimeout" value="300" />
+    </bean>
+
+ <!-- ############################### -->
+
+</beans>
